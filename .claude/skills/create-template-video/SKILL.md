@@ -11,9 +11,17 @@ template — toàn bộ thiết kế/animation do template lo.
 
 ## Input
 
-1 tham số: URL bài báo (`http://`/`https://`) HOẶC đường dẫn file `.txt`.
+1 tham số bắt buộc: URL bài báo (`http://`/`https://`) HOẶC đường dẫn file `.txt`.
+1 tham số tuỳ chọn: `brand` — id thư mục trong `brands/` (mặc định `default`).
 
 ## Workflow (theo đúng thứ tự)
+
+### Step 0: Xác định brand
+
+Chạy `ls brands/` để xem các brand id có sẵn (mỗi thư mục con có `brand.json`).
+Nếu user không nói brand nào → dùng `"default"`. Nếu user nói brand không tồn tại
+trong danh sách → báo lại các brand hiện có, hỏi user chọn hoặc tạo mới (xem
+`brands/README.md`), rồi dừng — đừng tự bịa brand.
 
 ### Step 1–3: Lấy nội dung + tạo output dir
 
@@ -68,7 +76,8 @@ Cấu trúc bắt buộc:
     "metadata": {
         "title": "...",
         "source": { "url": "...", "domain": "...", "image": null },
-        "channel": "AI Coding"
+        "channel": "AI Coding",
+        "brand": "default"
     },
     "voice": { "provider": "omnivoice", "speed": 1.0 },
     "scenes": [
@@ -77,6 +86,10 @@ Cấu trúc bắt buộc:
 }
 ```
 
+- `metadata.brand` = id đã xác định ở Step 0. Pipeline tự điền logo + tên + tagline +
+  URL + wordmark kênh từ `brands/<brand>/brand.json` vào các scene liên quan — KHÔNG
+  cần tự set `logo_url`/`brand_name`/`brand_label`/`tagline`/`primary_url` trong
+  `inputs` trừ khi muốn override riêng 1 scene.
 - `provider`: luôn là `omnivoice` (TTS local duy nhất; không cần `voiceId`/API key).
 - Mỗi scene: `{ id, type, voiceText, templateId, inputs }`. `inputs` khớp slot trong CATALOG.
 - scenes[0].type = `hook`; scene cuối .type = `outro` (templateId = `frame-logo-outro`).

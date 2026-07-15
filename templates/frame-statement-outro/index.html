@@ -10,9 +10,8 @@
         />
         <style>
             /*
-   * frame-statement-outro — closing card (Bold Poster design system).
-   * Original work for this repo. Landscape 16:9 (1920×1080). The 9:16 layout
-   * lives at compositions/portrait.html.
+   * frame-statement-outro — closing card (Dark Navy theme, CFF brand).
+   * Deep navy #020c1a background, cyan #5ce1e6 accents, floating bubbles.
    */
             * {
                 margin: 0;
@@ -24,14 +23,14 @@
                 width: 1920px;
                 height: 1080px;
                 overflow: hidden;
-                background: #f5f2ef;
+                background: #020c1a;
             }
             #root {
                 position: relative;
                 width: 1920px;
                 height: 1080px;
-                background: #f5f2ef;
-                color: #1c1410;
+                background: #020c1a;
+                color: #e8f4fd;
                 font-family: "Be Vietnam Pro", sans-serif;
                 display: flex;
                 flex-direction: column;
@@ -41,14 +40,14 @@
             .sheet {
                 position: absolute;
                 inset: 0;
-                background: #f5f2ef;
+                background: #020c1a;
                 opacity: 0;
                 animation: fade 0.5s ease-out forwards;
             }
             .rule-top {
                 width: 0;
                 height: 5px;
-                background: #d8000f;
+                background: #5ce1e6;
                 margin-bottom: 48px;
                 animation: ruleW 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.4s
                     forwards;
@@ -63,7 +62,7 @@
                 font-weight: 500;
                 letter-spacing: 2px;
                 text-transform: uppercase;
-                color: #1c1410;
+                color: #e8f4fd;
                 text-align: center;
                 max-width: 1100px;
                 line-height: 1.2;
@@ -75,7 +74,10 @@
                 font-family: "Alfa Slab One", cursive;
                 font-size: 150px;
                 line-height: 1;
-                color: #d8000f;
+                background: linear-gradient(135deg, #5ce1e6 0%, #38bdf8 50%, #818cf8 100%);
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
                 text-align: center;
                 margin: 28px 0 36px;
                 max-width: 1500px;
@@ -95,7 +97,7 @@
                 font-weight: 500;
                 letter-spacing: 3px;
                 text-transform: uppercase;
-                color: rgba(28, 20, 16, 0.55);
+                color: #7ec8e3;
                 text-align: center;
                 opacity: 0;
                 animation: fade 0.6s ease-out 1.5s forwards;
@@ -103,7 +105,7 @@
             .rule-bot {
                 width: 0;
                 height: 2px;
-                background: #1c1410;
+                background: #2a4a6e;
                 margin-top: 48px;
                 animation: ruleW2 0.7s cubic-bezier(0.16, 1, 0.3, 1) 1.7s
                     forwards;
@@ -113,6 +115,35 @@
                     width: 560px;
                 }
             }
+
+            /* Floating bubbles */
+            .bubble { position: absolute; border-radius: 50%; pointer-events: none; }
+            .bb1 { width: 110px; height: 110px; top: 10%; left: 7%;
+                background: radial-gradient(circle at 35% 35%, rgba(92,225,230,0.18), rgba(92,225,230,0.03));
+                border: 1.5px solid rgba(92,225,230,0.15);
+                box-shadow: 0 0 28px rgba(92,225,230,0.1), inset 0 0 18px rgba(92,225,230,0.05);
+                animation: fb1 15s ease-in-out infinite; }
+            .bb2 { width: 76px; height: 76px; top: 35%; right: 8%;
+                background: radial-gradient(circle at 35% 30%, rgba(56,189,248,0.2), rgba(56,189,248,0.03));
+                border: 1.5px solid rgba(56,189,248,0.16);
+                box-shadow: 0 0 22px rgba(56,189,248,0.12), inset 0 0 14px rgba(56,189,248,0.05);
+                animation: fb2 11s ease-in-out infinite; }
+            .bb3 { width: 140px; height: 140px; bottom: 15%; right: 6%;
+                background: radial-gradient(circle at 40% 35%, rgba(129,140,248,0.14), rgba(129,140,248,0.02));
+                border: 1.5px solid rgba(129,140,248,0.12);
+                box-shadow: 0 0 32px rgba(129,140,248,0.09), inset 0 0 20px rgba(129,140,248,0.04);
+                animation: fb3 17s ease-in-out infinite; }
+            .bb4 { width: 64px; height: 64px; bottom: 30%; left: 5%;
+                background: radial-gradient(circle at 38% 32%, rgba(140,82,255,0.2), rgba(140,82,255,0.03));
+                border: 1.5px solid rgba(140,82,255,0.14);
+                box-shadow: 0 0 18px rgba(140,82,255,0.1), inset 0 0 10px rgba(140,82,255,0.04);
+                animation: fb4 9s ease-in-out infinite; }
+
+            @keyframes fb1 { 0%,100%{transform:translate(0,0) scale(1)} 40%{transform:translate(22px,-38px) scale(1.06)} 70%{transform:translate(-16px,-18px) scale(0.94)} }
+            @keyframes fb2 { 0%,100%{transform:translate(0,0) scale(1.02)} 35%{transform:translate(-28px,26px) scale(0.92)} 68%{transform:translate(18px,-32px) scale(1.08)} }
+            @keyframes fb3 { 0%,100%{transform:translate(0,0) scale(0.96)} 45%{transform:translate(16px,34px) scale(1.1)} 80%{transform:translate(-20px,14px) scale(0.94)} }
+            @keyframes fb4 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-26px,-26px) scale(1.07)} }
+
             @keyframes fade {
                 to {
                     opacity: 1;
@@ -137,6 +168,10 @@
             data-composition-variables='{"cta":"Theo dõi để xem bản tin mới mỗi ngày","channel":"AI Coding","source":"Nguồn: https://aicodingvn.vercel.app/"}'
         >
             <div class="sheet"></div>
+            <div class="bubble bb1"></div>
+            <div class="bubble bb2"></div>
+            <div class="bubble bb3"></div>
+            <div class="bubble bb4"></div>
             <div class="rule-top"></div>
             <div class="cta"></div>
             <div class="channel"></div>

@@ -12,6 +12,11 @@ Render aspect is set once per script (`"aspect": "9:16"` for TikTok/Shorts).
 > but NEVER in `voiceText`. Don't put emoji in char-by-char animated fields
 > (e.g. `hero` of build-minimal).
 
+> **Brand:** logo + channel identity (name, tagline, URL, footer wordmark) is not
+> hardcoded — it comes from `brands/<id>/brand.json` (see `brands/README.md`),
+> selected per script via `metadata.brand`. The pipeline auto-fills every
+> brand-identity slot below unless a scene's own `inputs` sets it explicitly.
+
 ---
 
 ## frame-bold-poster
@@ -29,6 +34,31 @@ Render aspect is set once per script (`"aspect": "9:16"` for TikTok/Shorts).
 | `standfirst`   | string   | ≤160                     | italic serif sub-line                                |
 | `footer_left`  | string   | ≤32                      | channel name                                         |
 | `footer_right` | string   | ≤32                      | source domain (renders red)                          |
+
+---
+
+## frame-image-bg-hero
+
+**Role:** hook / body / outro. User-supplied image as full-bleed background
+with a dark scrim overlay and configurable text on top. Text position,
+alignment, overlay opacity, and text colour are all adjustable via slots.
+**Best for:** any scene where you have a pre-existing image (photo,
+screenshot, graphic) and want punchy text overlaid — brand posts,
+landscape shots, screenshot callouts, marketing visuals.
+
+| slot            | type    | limit                      | notes                                              |
+| --------------- | ------- | -------------------------- | -------------------------------------------------- |
+| `image_url`     | string  | url / absolute file path   | the background image (local path or https URL)     |
+| `headline`      | string  | ≤60                        | the main headline, rendered large and bold         |
+| `subheadline`   | string  | ≤120                       | one supporting sentence under the headline         |
+| `cta`           | string  | ≤24                        | optional pill-shaped call-to-action label          |
+| `position`      | string  | "top" \| "center" \| "bottom" | vertical anchor for the text block (default "center") |
+| `align`         | string  | "left" \| "center" \| "right" | horizontal alignment of the text block (default "center") |
+| `overlay_alpha` | number  | 0–1 (default 0.55)         | opacity of the dark scrim over the image           |
+| `text_color`    | string  | hex (default `#ffffff`)    | headline + subheadline colour                      |
+| `accent_color`  | string  | hex (default `#ff9a3d`)    | CTA pill accent + headline text-shadow glow        |
+| `kicker`        | string  | ≤32                        | small uppercase label, top-left corner              |
+| `brand`         | string  | ≤32                        | footer wordmark, bottom-right corner                |
 
 ---
 
@@ -115,6 +145,8 @@ sweep, tagline, and a footer URL.
 | `brand_name`  | string | ≤60   | channel/brand name (big, shimmering)                        |
 | `tagline`     | string | ≤120  | one line under the name                                     |
 | `primary_url` | string | ≤40   | footer URL / source (e.g. "https://aicodingvn.vercel.app/") |
+| `logo_url`    | string | url   | optional — logo image src; auto-filled from the selected brand (`metadata.brand`), set per-scene to override |
+| `brand_label` | string | ≤24   | optional — small line under the logo; auto-filled from the selected brand |
 
 ---
 
@@ -134,6 +166,8 @@ subheadline and a rounded CTA pill.
 | `subheadline`   | string | ≤120 | one supporting sentence                                       |
 | `cta`           | string | ≤24  | rounded pill label (e.g. "Theo dõi ngay")                    |
 | `brand`         | string | ≤24  | footer-left label (channel/source)                           |
+| `logo_url`      | string | url  | optional — logo image src; auto-filled from the selected brand (`metadata.brand`), set per-scene to override |
+| `brand_label`   | string | ≤24  | optional — small line under the logo; auto-filled from the selected brand |
 
 > Headline renders in an eye-catching gradient (default gold→orange→pink→purple).
 > Override with `headline_from`/`headline_to` to fit the tone if you want.

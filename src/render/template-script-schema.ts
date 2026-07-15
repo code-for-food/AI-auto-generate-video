@@ -40,10 +40,14 @@ export const TemplateScriptSchema = z.object({
       image: z.string().url().nullable(),
     }),
     channel: z.string().min(1),
+    /** Brand id under brands/<id>/brand.json — supplies logo + identity defaults. */
+    brand: z.string().min(1).default("default"),
   }),
   voice: z.object({
     provider: z.literal("omnivoice").default("omnivoice"),
     speed: z.number().min(0.5).max(2.0),
+    /** Optional Voice Design instruction (e.g., "male, child", "female, young adult"). */
+    instruct: z.string().optional(),
   }),
   /** Output aspect for every scene (templates render a matching composition). */
   aspect: z.enum(["9:16", "16:9", "1:1"]).default("9:16"),

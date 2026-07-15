@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="./assets/logo.svg" alt="AI Coding" width="96" />
+<img src="./assets/logo.png" alt="Code For Food" width="96" />
 
 <h1>AI&nbsp;Coding&nbsp;·&nbsp;Template&nbsp;Video</h1>
 
@@ -24,7 +24,9 @@ One command · zero editing · deterministic renders.</p>
 <a href="#-quick-start"><b>Quick Start</b></a> ·
 <a href="#-how-it-works"><b>How It Works</b></a> ·
 <a href="#-usage"><b>Usage</b></a> ·
-<a href="#-templates"><b>Templates</b></a>
+<a href="#-hermes-agent"><b>Hermes Agent</b></a> ·
+<a href="#-templates"><b>Templates</b></a> ·
+<a href="#-brands"><b>Brands</b></a>
 </sub>
 
 </div>
@@ -48,28 +50,6 @@ CapCut / TikTok / Shorts / Reels:
 | `video.mp4`  | Final 9:16 video with voice + SFX baked in |
 | `voice.mp3`  | Narration track — drop into CapCut         |
 | `script.txt` | Plain text — CapCut auto-caption           |
-
----
-
-<div align="center">
-
-### 📚 Muốn làm chủ Claude Code? Học bài bản cùng AI Coding
-
-<a href="https://www.udemy.com/course/claude-code-in-action-practical-guide-from-beginner-to-pro/?referralCode=C62ACDC291F191DF9E55">
-<img src="https://img-c.udemycdn.com/course/480x270/7112153_093e_13.jpg" alt="Vibe Coding Thực Chiến với Claude Code: Từ Zero đến Hero" width="480" />
-</a>
-
-**Vibe Coding Thực Chiến với Claude Code: Từ Zero đến Hero**
-<br/><sub><b>Senior AI Engineer</b> @ AI Coding</sub>
-
-<p><sub>
-Setup &nbsp;·&nbsp; Permission Modes &nbsp;·&nbsp; Memory &nbsp;·&nbsp; Hooks &nbsp;·&nbsp; Skills &nbsp;·&nbsp; MCP Servers &nbsp;·&nbsp; Subagents &nbsp;·&nbsp; GitHub<br/>
-Từ <b>zero</b> đến <b>hero</b> — đúng cách build agent &amp; tự động hoá như repo này.
-</sub></p>
-
-[![Đăng ký trên Udemy](https://img.shields.io/badge/▶_Đăng_ký_ngay_trên_Udemy-A435F0?style=for-the-badge&logo=udemy&logoColor=white)](https://www.udemy.com/course/claude-code-in-action-practical-guide-from-beginner-to-pro/?referralCode=C62ACDC291F191DF9E55)
-
-</div>
 
 ---
 
@@ -102,10 +82,10 @@ Claude fetches the article, writes `script.json`, and runs the pipeline for you.
 **Manual** — _bring your own `script.json`_
 
 ```bash
-npm run pipeline -- output/my-video/script.json
+npm run pipeline -- output/my-video/script.json --brand=default
 ```
 
-Full control over every scene and template.
+Full control over every scene, template, and brand.
 
 </td>
 </tr>
@@ -218,6 +198,7 @@ The skill reads the content, writes `script.json`, and runs the pipeline. Author
 
 ```bash
 npm run pipeline -- output/<slug>/script.json
+npm run pipeline -- output/<slug>/script.json --brand=demo  # override metadata.brand
 ```
 
 <details>
@@ -237,7 +218,8 @@ npm run pipeline -- output/<slug>/script.json
             "domain": "aicodingvn.vercel.app",
             "image": null
         },
-        "channel": "AI Coding"
+        "channel": "AI Coding",
+        "brand": "default"
     },
     "voice": { "provider": "omnivoice", "speed": 1.0 },
     "scenes": [
@@ -284,6 +266,10 @@ npm run pipeline -- output/<slug>/script.json
 Schema rules: **3–12 scenes** · `scenes[0].type === "hook"` · last scene `type === "outro"` ·
 every `templateId` must exist under `templates/`.
 
+`metadata.brand` (default `"default"`) picks the logo + brand identity from
+[`brands/`](brands/README.md) — switch brands and the logo/name/tagline/URL update across
+the whole video, no per-scene edits needed.
+
 </details>
 
 <details>
@@ -314,6 +300,32 @@ output/<slug>-<timestamp>/
 
 ---
 
+## 🤖 Hermes Agent
+
+Prefer [Hermes Agent](https://github.com/) (`hermes` CLI) over Claude Code? Two bundled
+skills under [`hermes-skills/`](hermes-skills/) mirror `/create-template-video` — one
+writes `script.json` from a URL/text, the other runs the render pipeline:
+
+```bash
+cp -r hermes-skills/create-video-from-content hermes-skills/auto-generate-video \
+  ~/.hermes/skills/
+sed -i "s#<REPO_PATH>#$(pwd)#g" \
+  ~/.hermes/skills/create-video-from-content/SKILL.md \
+  ~/.hermes/skills/auto-generate-video/SKILL.md
+```
+
+Then just talk to `hermes`:
+
+```
+hermes
+> Tạo video từ bài báo https://example.com/some-article, dùng brand default
+```
+
+Full install steps, how the two skills split responsibility, and how to port fixes back
+after Hermes tunes its own copy from real usage: [`hermes-skills/README.md`](hermes-skills/README.md).
+
+---
+
 ## 🎨 Templates
 
 Every visual is a self-contained **HyperFrames** project under `templates/` — `index.html` (16:9)
@@ -337,6 +349,34 @@ Full slot reference: [`templates/CATALOG.md`](templates/CATALOG.md).
 > **Add your own:** drop `templates/<id>/` with `index.html`, `compositions/portrait.html`,
 > `hyperframes.json`, `meta.json` (+ `NOTICE.md` if vendored), then add a row to `CATALOG.md`.
 > Use a Vietnamese-capable font stack.
+
+---
+
+## 🏷️ Brands
+
+Logo and channel identity are **not** hardcoded into the templates — every scene that shows a
+logo, brand name, tagline, URL, or channel-footer label pulls it from a `brands/<id>/brand.json`
+picked via `metadata.brand` (or `--brand=<id>` on the CLI). Switch the brand and every one of
+those slots updates across the whole video; a scene's own `inputs` can still override any single
+field.
+
+```
+brands/
+  <id>/
+    brand.json   # name, tagline, url, label, logo (path relative to this folder)
+    logo.svg     # or .png/.jpg — converted to an inline data: URI at render time
+```
+
+| Brand     | Identity                                                        |
+| --------- | ----------------------------------------------------------------- |
+| `default` | Used whenever `metadata.brand` is omitted — edit `brands/default/brand.json` to your own identity |
+| `demo`    | Example brand, kept as a stable reference/test fixture             |
+
+Full field reference and how to add a new brand: [`brands/README.md`](brands/README.md).
+
+> The logo is inlined as a base64 `data:` URI, not a `file://` path — Chromium (via HyperFrames)
+> refuses to load `file://` resources outside a template's own directory, so a cross-directory
+> logo path would silently fail to render.
 
 ---
 
@@ -387,38 +427,3 @@ No `assets/sfx/`? The pipeline just renders without SFX.
 - [html-video](https://github.com/nexu-io/html-video) — HTML-to-video approach this project builds on
 - [Auto-Create-Video](https://github.com/hoquanghai/Auto-Create-Video) — the original project this is based on
 
----
-
-## 💖 Support this project
-
-If this project saved you time, please consider:
-
-- ⭐ **Star this repo** — it really helps with discoverability
-- 🎓 **[Check out AI Coding's courses on Udemy](https://www.udemy.com/user/tran-van-huy-7/)**
-- 📱 **Follow AI Coding** on [Facebook](https://www.facebook.com/aicoding2010) · [TikTok](https://www.tiktok.com/@aicoding2010) · [YouTube](https://www.youtube.com/@aicoding2010)
-- 💬 Tell a friend who creates content
-- 🐛 Report bugs or request features
-
----
-
-## ⭐ Star History
-
-<a href="https://www.star-history.com/?type=date&repos=huytranvan2010%2FAI-auto-generate-video">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=huytranvan2010/AI-auto-generate-video&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=huytranvan2010/AI-auto-generate-video&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=huytranvan2010/AI-auto-generate-video&type=date&legend=top-left" />
- </picture>
-</a>
-
----
-
-<div align="center">
-
-<br/>
-
-**[⬆ Back to top](#top)**
-
-<sub>Made with ❤️ by <b>AI Coding</b> · <a href="https://aicodingvn.vercel.app/">aicodingvn.vercel.app</a></sub>
-
-</div>

@@ -3,6 +3,7 @@ import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import pLimit from "p-limit";
 import { TemplateScriptSchema, type TemplateScript } from "./template-script-schema.js";
+import { loadBrand, brandInputDefaults } from "../brand/brand.js";
 import { loadConfig } from "../config.js";
 import { createTtsClient } from "../tts/tts-client.js";
 import {
@@ -28,7 +29,15 @@ const TYPE_TO_SFX: Record<string, string> = {
   outro: "outro",
 };
 
-export async function runTemplatePipeline(scriptPath: string): Promise<void> {
+export interface RunTemplatePipelineOptions {
+  /** Overrides script.metadata.brand — e.g. from `--brand=<id>` on the CLI. */
+  brandOverride?: string;
+}
+
+export async function runTemplatePipeline(
+  scriptPath: string,
+  opts: RunTemplatePipelineOptions = {},
+): Promise<void> {
   const cfg = loadConfig();
   const outputDir = dirname(scriptPath);
   log.info(`Output directory: ${outputDir}`);
@@ -37,6 +46,8 @@ export async function runTemplatePipeline(scriptPath: string): Promise<void> {
   log.step(1, TOTAL_STEPS, `Load + validate template script (TTS: ${cfg.ttsProvider})`);
   const raw = JSON.parse(await readFile(scriptPath, "utf8"));
   const script: TemplateScript = TemplateScriptSchema.parse(raw);
+  const brand = await loadBrand(opts.brandOverride ?? script.metadata.brand);
+  log.info(`  Brand: ${brand.id} (${brand.name})`);
 
   // STEP 2 — script.txt for CapCut
   log.step(2, TOTAL_STEPS, "Write script.txt");
@@ -59,7 +70,7 @@ export async function runTemplatePipeline(scriptPath: string): Promise<void> {
           return { id: scene.id, path: out, durationSec: dur };
         }
         log.info(`  TTS scene ${scene.id} (${scene.voiceText.length} chars)...`);
-        await ttsClient.generate(scene.voiceText, out, srtOut);
+        await ttsClient.generate(scene.voiceText, out, srtOut, script.voice.instruct);
         const dur = await getDurationSec(out);
         log.info(`  scene ${scene.id}: ${dur.toFixed(2)}s`);
         return { id: scene.id, path: out, durationSec: dur };
@@ -128,7 +139,7 @@ export async function runTemplatePipeline(scriptPath: string): Promise<void> {
     } else {
       await composeTemplate({
         templateId: scene.templateId,
-        inputs: scene.inputs,
+        inputs: { ...brandInputDefaults(scene.templateId, brand), ...scene.inputs },
         aspect: script.aspect,
         outputPath: rawClip,
         fps: RENDER_FPS,

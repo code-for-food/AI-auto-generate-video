@@ -227,7 +227,7 @@
             data-duration="5"
             data-width="1080"
             data-height="1920"
-            data-composition-variables='{"brand_name":"AI Coding","tagline":"Bản tin mới mỗi ngày","primary_url":"https://aicodingvn.vercel.app/"}'
+            data-composition-variables='{"brand_name":"AI Coding","tagline":"Bản tin mới mỗi ngày","primary_url":"https://aicodingvn.vercel.app/","logo_url":"../assets/logo.svg","brand_label":"Senior AI Engineer"}'
         >
             <div class="brand-bar">
                 <img class="logo-img" src="../assets/logo.svg" />
@@ -285,6 +285,9 @@
                 set(".brand .shimmer", v.brand_name);
                 set(".tagline", v.tagline);
                 set(".meta-url", v.primary_url);
+                set(".brand-label", v.brand_label);
+                var logoEl = document.querySelector(".logo-img");
+                if (logoEl && v.logo_url) logoEl.src = v.logo_url;
             })();
             window.__timelines = window.__timelines || {};
             window.__timelines["main"] = {

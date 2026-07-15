@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Image BG Hero · 9:16</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0; padding: 0; box-sizing: border-box;
+      }
+      html, body {
+        width: 1080px; height: 1920px; overflow: hidden;
+        background: #000;
+      }
+      #root {
+        position: relative;
+        width: 1080px; height: 1920px;
+        overflow: hidden;
+        font-family: "Inter Tight", system-ui, sans-serif;
+        color: #ffffff;
+        z-index: 0;
+      }
+
+      .bg-img {
+        position: absolute;
+        inset: 0;
+        width: 100%; height: 100%;
+        object-fit: cover;
+        object-position: center;
+        z-index: 0;
+      }
+
+      .scrim {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background: rgba(0, 0, 0, 0.55);
+      }
+
+      .chip {
+        position: absolute;
+        left: 50px; right: 50px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 16px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        opacity: 0.75;
+        z-index: 10;
+        font-weight: 500;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+      }
+      .chip.top    { top: 50px; }
+      .chip.bottom { bottom: 50px; }
+
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(22px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      .text-block {
+        position: absolute;
+        left: 60px; right: 60px;
+        z-index: 10;
+        opacity: 0;
+        animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+      }
+
+      .headline {
+        font-weight: 900;
+        letter-spacing: -2px;
+        line-height: 1.1;
+        font-size: 92px;
+        color: #ffffff;
+        text-shadow: 0 6px 34px rgba(0, 0, 0, 0.55),
+                     0 0 60px rgba(255, 154, 61, 0.3);
+        max-width: 960px;
+        margin: 0 auto;
+      }
+
+      .subheadline {
+        margin-top: 26px;
+        font-size: 26px;
+        font-weight: 500;
+        line-height: 1.4;
+        opacity: 0.9;
+        max-width: 920px;
+        margin-left: auto;
+        margin-right: auto;
+        text-shadow: 0 2px 16px rgba(0, 0, 0, 0.6);
+      }
+
+      .cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 36px;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        padding: 14px 36px;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 154, 61, 0.55);
+        background: rgba(255, 154, 61, 0.12);
+        color: #ffffff;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+        opacity: 0;
+        animation: fadeUp 0.7s ease-out 0.9s both;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="5"
+      data-width="1080"
+      data-height="1920"
+      data-composition-variables='{"image_url":"","headline":"","subheadline":"","cta":"","position":"center","align":"center","overlay_alpha":0.55,"text_color":"#ffffff","accent_color":"#ff9a3d","kicker":"","brand":""}'
+    >
+      <!-- user-supplied background image -->
+      <img class="bg-img" src="" alt="" />
+
+      <!-- dark scrim overlay -->
+      <div class="scrim"></div>
+
+      <!-- top chip row -->
+      <div class="chip top">
+        <span class="kicker-sel"></span><span>9:16</span>
+      </div>
+
+      <!-- configurable text block -->
+      <div class="text-block">
+        <h1 class="headline"></h1>
+        <p class="subheadline"></p>
+        <div class="cta"></div>
+      </div>
+
+      <!-- bottom chip row -->
+      <div class="chip bottom">
+        <span class="brand-sel"></span><span>Bản tin</span>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        var v =
+          window.__hyperframes &&
+          typeof window.__hyperframes.getVariables === "function"
+            ? window.__hyperframes.getVariables()
+            : {};
+
+        // --- image_url ---
+        var imgEl = document.querySelector(".bg-img");
+        if (imgEl && v.image_url) {
+          imgEl.src = v.image_url;
+        }
+
+        // --- scrim opacity ---
+        var scrimEl = document.querySelector(".scrim");
+        if (scrimEl && v.overlay_alpha != null) {
+          var alpha = Math.max(0, Math.min(1, Number(v.overlay_alpha) || 0.55));
+          scrimEl.style.background = "rgba(0, 0, 0, " + alpha + ")";
+        }
+
+        // --- text colour ---
+        if (v.text_color) {
+          var hl = document.querySelector(".headline");
+          var sh = document.querySelector(".subheadline");
+          if (hl) hl.style.color = v.text_color;
+          if (sh) sh.style.color = v.text_color;
+        }
+
+        // --- accent colour (CTA pill + headline glow) ---
+        if (v.accent_color) {
+          var hlEl = document.querySelector(".headline");
+          if (hlEl) {
+            hlEl.style.textShadow =
+              "0 6px 34px rgba(0, 0, 0, 0.55), 0 0 80px " + v.accent_color + "40";
+          }
+          var ctaEl = document.querySelector(".cta");
+          if (ctaEl) {
+            ctaEl.style.borderColor = v.accent_color + "8c";
+            ctaEl.style.background = v.accent_color + "1f";
+          }
+        }
+
+        // --- text content ---
+        var setText = function (sel, text) {
+          var el = document.querySelector(sel);
+          if (el && text != null) el.textContent = String(text);
+        };
+        setText(".headline", v.headline);
+        setText(".subheadline", v.subheadline);
+        setText(".cta", v.cta);
+        setText(".kicker-sel", v.kicker);
+        setText(".brand-sel", v.brand);
+
+        // --- position (vertical anchor) ---
+        if (v.position) {
+          var tb = document.querySelector(".text-block");
+          if (tb) {
+            var vertMap = {
+              top:    "top: 80px; bottom: auto; transform: none;",
+              center: "top: 50%; bottom: auto; transform: translateY(-50%);",
+              bottom: "top: auto; bottom: 80px; transform: none;"
+            };
+            tb.style.cssText += vertMap[v.position] || vertMap.center;
+          }
+        }
+
+        // --- align (horizontal) ---
+        if (v.align) {
+          var tb = document.querySelector(".text-block");
+          if (tb) {
+            var hMap = {
+              left:   "text-align: left;",
+              center: "text-align: center;",
+              right:  "text-align: right;"
+            };
+            tb.style.textAlign = (hMap[v.align] || "center").match(/:(.*);/)[1];
+          }
+        }
+      })();
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = {
+        pause: function () {},
+        seek:  function () {},
+        paused: function () { return true; }
+      };
+    </script>
+  </body>
+</html>

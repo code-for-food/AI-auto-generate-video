@@ -250,7 +250,7 @@
             data-duration="5"
             data-width="1080"
             data-height="1920"
-            data-composition-variables='{"kicker":"AI Coding","brand":"https://aicodingvn.vercel.app/","headline":"GPT 5.5 ra mắt","subheadline":"Mô hình AI mạnh nhất từ trước tới nay vừa được công bố.","cta":"Theo dõi ngay"}'
+            data-composition-variables='{"kicker":"AI Coding","brand":"https://aicodingvn.vercel.app/","headline":"GPT 5.5 ra mắt","subheadline":"Mô hình AI mạnh nhất từ trước tới nay vừa được công bố.","cta":"Theo dõi ngay","logo_url":"../assets/logo.svg","brand_label":"Senior AI Engineer"}'
         >
             <div class="blob b1"></div>
             <div class="blob b2"></div>
@@ -291,6 +291,9 @@
                 };
                 set(".kicker", v.kicker);
                 set(".brand", v.brand);
+                set(".brand-label", v.brand_label);
+                var logoEl = document.querySelector(".logo-img");
+                if (logoEl && v.logo_url) logoEl.src = v.logo_url;
                 set(".headline", v.headline);
                 set(".subheadline", v.subheadline);
                 // Optional caller-chosen headline gradient (else the vivid default).

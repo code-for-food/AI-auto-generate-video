@@ -6,6 +6,13 @@ coverage/
 .env
 *.log
 .DS_Store
-
+clips
+voice
+scripts
+*.mp3
+*.mp4
 # Big SFX library (downloaded by `npm run sfx:download` — too large to commit)
 SFX/
+
+# Chromium binary HyperFrames downloads on first render — not source, don't commit
+chrome-headless-shell/

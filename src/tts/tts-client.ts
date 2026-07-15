@@ -7,8 +7,9 @@ export interface TtsClient {
    * Generate speech audio for `text` and write to `audioOutPath` (mp3 or wav).
    * If `srtOutPath` is provided AND the provider supports subtitles,
    * write the SRT to that path. Otherwise silently skip.
+   * Optional `instruct` parameter for voice design (e.g., "male, child").
    */
-  generate(text: string, audioOutPath: string, srtOutPath?: string): Promise<void>;
+  generate(text: string, audioOutPath: string, srtOutPath?: string, instruct?: string): Promise<void>;
 }
 
 import type { Config } from "../config.js";

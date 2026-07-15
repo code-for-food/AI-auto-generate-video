@@ -1,13 +1,49 @@
 import { spawn } from "node:child_process";
-import { existsSync, mkdtempSync, writeFileSync } from "node:fs";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, isAbsolute, join, resolve } from "node:path";
+import { basename, dirname, isAbsolute, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { log } from "../utils/logger.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 /** Repo-root/templates — where vendored HyperFrames templates live. */
 const TEMPLATES_DIR = join(__dirname, "..", "..", "templates");
+
+/**
+ * If `inputs.image_url` is a local absolute file path, copy it into the
+ * template's assets/ folder and rewrite the variable to a relative path
+ * that HyperFrames' file server can serve.
+ */
+function prepareImageAsset(
+  templateId: string,
+  inputs: Record<string, unknown>,
+): Record<string, unknown> {
+  const url = inputs.image_url;
+  if (typeof url !== "string" || !isAbsolute(url)) return inputs;
+
+  // Only process local file paths (not https:// URLs)
+  if (!url.startsWith("/")) return inputs;
+
+  const templateAssetsDir = join(TEMPLATES_DIR, templateId, "assets");
+  if (!existsSync(templateAssetsDir)) {
+    mkdirSync(templateAssetsDir, { recursive: true });
+  }
+
+  const fname = basename(url);
+  const dest = join(templateAssetsDir, fname);
+  copyFileSync(url, dest);
+
+  const newInputs = { ...inputs };
+  newInputs.image_url = `assets/${fname}`;
+  log.info(`Copied local image ${url} → ${dest} (served as assets/${fname})`);
+  return newInputs;
+}
 
 export type Aspect = "16:9" | "9:16" | "1:1";
 
@@ -47,6 +83,9 @@ export async function composeTemplate(args: ComposeArgs): Promise<string> {
         throw new Error(`Template not found: ${templateDir}/index.html`);
     }
 
+    // Prepare local image asset if provided
+    const preparedInputs = prepareImageAsset(templateId, inputs);
+
     // Pick the composition file for the requested aspect (fall back to index.html).
     const entry = aspect ? ASPECT_ENTRY[aspect] : "index.html";
     const entryFile = existsSync(join(templateDir, entry))
@@ -64,7 +103,7 @@ export async function composeTemplate(args: ComposeArgs): Promise<string> {
         mkdtempSync(join(tmpdir(), "hf-vars-")),
         "variables.json",
     );
-    writeFileSync(varsFile, JSON.stringify(inputs), "utf8");
+    writeFileSync(varsFile, JSON.stringify(preparedInputs), "utf8");
 
     const spawnArgs = [
         // -y: never prompt to install. Pinned version → deterministic renders.

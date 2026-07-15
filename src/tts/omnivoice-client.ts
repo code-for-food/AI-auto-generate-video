@@ -14,7 +14,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export class OmniVoiceClient implements TtsClient {
   constructor(private cfg: OmniVoiceOpts) {}
 
-  async generate(text: string, audioOutPath: string, _srtOutPath?: string): Promise<void> {
+  async generate(text: string, audioOutPath: string, _srtOutPath?: string, instruct?: string): Promise<void> {
     const delays = [1000, 2000, 4000];
     let lastErr: unknown;
 
@@ -22,8 +22,8 @@ export class OmniVoiceClient implements TtsClient {
       try {
         const resp = await axios.post<ArrayBuffer>(
           `${this.cfg.endpoint}/tts`,
-          { text },
-          { headers: { "Content-Type": "application/json", Accept: "audio/mpeg" }, responseType: "arraybuffer", timeout: 60000 },
+          { text, ...(instruct ? { instruct } : {}) },
+          { headers: { "Content-Type": "application/json", Accept: "audio/mpeg" }, responseType: "arraybuffer", timeout: 180000 },
         );
         await writeFile(audioOutPath, Buffer.from(resp.data));
         return;
